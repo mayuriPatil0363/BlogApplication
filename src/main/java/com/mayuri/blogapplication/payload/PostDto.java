@@ -1,9 +1,10 @@
 package com.mayuri.blogapplication.payload;
 
-import java.util.Date;
 
-import com.mayuri.blogapplication.model.Category;
-import com.mayuri.blogapplication.model.User;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.mayuri.blogapplication.model.Comment;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -25,6 +26,9 @@ public class PostDto {
 	private UserDto user;
 	
 	private CategoryDto category;
+	
+	private Set<CommentDto> comment = new HashSet();
+
 
 	public Integer getPostId() {
 		return postId;

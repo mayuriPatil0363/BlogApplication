@@ -1,9 +1,6 @@
 package com.mayuri.blogapplication.payload;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import com.mayuri.blogapplication.model.Post;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -14,7 +11,7 @@ public class CategoryDto {
 	
 	@NotBlank
 	@Size(min=2, max=20, message="Size must be bitween 2 and 20. ")
-	private String Title;
+	private String title;
 
 	@NotBlank
 	@Size(min=2, max=500, message="Size must be bitween 2 and 500.")
@@ -30,12 +27,13 @@ public class CategoryDto {
 		this.categoryId = categoryId;
 	}
 
+
 	public String getTitle() {
-		return Title;
+		return title;
 	}
 
 	public void setTitle(String title) {
-		Title = title;
+		this.title = title;
 	}
 
 	public String getDescription() {
@@ -48,8 +46,10 @@ public class CategoryDto {
 
 	@Override
 	public String toString() {
-		return "CategoryDto [categoryId=" + categoryId + ", Title=" + Title + ", description=" + description + "]";
+		return "CategoryDto [categoryId=" + categoryId + ", title=" + title + ", description=" + description + "]";
 	}
+
+	
 
 	
 

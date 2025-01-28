@@ -9,13 +9,21 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.mayuri.blogapplication.constant.PostConstant;
 import com.mayuri.blogapplication.exception.ResourceNotFoundException;
 import com.mayuri.blogapplication.model.Category;
 import com.mayuri.blogapplication.model.Post;
 import com.mayuri.blogapplication.model.User;
 import com.mayuri.blogapplication.payload.CategoryDto;
+import com.mayuri.blogapplication.payload.PageableResponse;
 import com.mayuri.blogapplication.payload.PostDto;
 import com.mayuri.blogapplication.repository.CategoryRepo;
 import com.mayuri.blogapplication.repository.PostRepo;
@@ -38,6 +46,7 @@ public class PostServiceImpl implements PostService {
 	@Autowired
 	private ModelMapper mapper;
 
+	//create post
 	@Override
 	public PostDto createPost(Integer userId, Integer categoryId ,PostDto postDto)
 	{
@@ -45,6 +54,7 @@ public class PostServiceImpl implements PostService {
 		Category category = categoryRepo.findById(categoryId).orElseThrow(()-> new ResourceNotFoundException("Category", "categoryId", categoryId));
 		Post post = mapper.map(postDto, Post.class);
 		post.setUser(user);
+		post.setIsActive(PostConstant.IS_ACTIVE_TRUE);
 		post.setCategory(category);
 		post.setImageName("default.png");
 		post.setDate(new Date());
@@ -52,25 +62,35 @@ public class PostServiceImpl implements PostService {
 		return mapper.map(savedPost, PostDto.class);
 	}
 
+	
+	//update post
 	@Override
 	public PostDto updatePost(Integer postId, PostDto postDto)
 	{
 		Post post = postRepo.findById(postId).orElseThrow(()->new  ResourceNotFoundException("Post","postId",postId));
 		post.setTitle(postDto.getTitle());
 		post.setContent(postDto.getContent());
+		post.setImageName(postDto.getImageName());
 		Post updatedPost = postRepo.save(post);
 		
 		return mapper.map(updatedPost, PostDto.class);
 	}
 
+	
+	//delete post
 	@Override
 	public void deletePost(Integer postId) 
 	{
 		Post post =postRepo.findById(postId).orElseThrow(()-> new ResourceNotFoundException("Post","postId", postId));
-		postRepo.delete(post);
+		if(!ObjectUtils.isEmpty(post)) {
+			post.setIsActive(PostConstant.IS_ACTIVE_FALSE);
+			postRepo.save(post);
+		}
 	
 	}
 
+	
+	//find by postId
 	@Override
 	public PostDto getPostById(Integer postId) 
 	{
@@ -78,14 +98,29 @@ public class PostServiceImpl implements PostService {
 		return mapper.map(post, PostDto.class);
 	}
 
+	
+	//find all posts
 	@Override
-	public List<PostDto> getListOfPosts()
+	public PageableResponse getListOfPosts(Integer pageNumber, Integer pageSize, String sortBy , String sortDir)
 	{
-		List<Post> posts = postRepo.findAll();
+		Sort sort = (sortDir.equalsIgnoreCase("desc"))?(Sort.by(sortBy).descending()):(Sort.by(sortBy).ascending());
+		PageRequest pageable = PageRequest.of(pageNumber, pageSize,sort);
+		Page<Post> page = postRepo.findAll(pageable);
+		List<Post> posts = page.getContent();
 		List<PostDto> collect = posts.stream().map(post -> mapper.map(post, PostDto.class)).collect(Collectors.toList());
-		return collect;
+		
+		PageableResponse response = new PageableResponse();
+		response.setContent(collect);
+		response.setPageNumber(page.getNumber());
+		response.setPageSize(page.getSize());
+		response.setTotalElement(page.getTotalElements());
+		response.setTotalPages(page.getTotalPages());
+		response.setIsLastpage(page.isLast());
+		return response ;
 	}
 
+	
+	//find post by category
 	@Override
 	public List<PostDto> getPostByCategory(Integer categoryId)
 	{
@@ -93,10 +128,11 @@ public class PostServiceImpl implements PostService {
 		List<Post> posts = postRepo.findByCategory(category);
 		List<PostDto> collect = posts.stream().map(post -> mapper.map(post, PostDto.class)).collect(Collectors.toList());
 		return collect;
-	
 		
 	}
 
+	
+	//find post by user
 	@Override
 	public List<PostDto> getPostByUserId(Integer userId)
 	{
@@ -106,6 +142,8 @@ public class PostServiceImpl implements PostService {
 		return collect;
 	}
 
+	
+	//search post
 	@Override
 	public List<PostDto> searchPost(String key) {
 		List<Post> posts = postRepo.findByTitleContaining(key);
@@ -113,5 +151,6 @@ public class PostServiceImpl implements PostService {
 		return collect;
 		
 	}
+
 
 }

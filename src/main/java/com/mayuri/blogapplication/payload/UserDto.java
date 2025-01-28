@@ -1,9 +1,12 @@
 package com.mayuri.blogapplication.payload;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import com.mayuri.blogapplication.model.Post;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.mayuri.blogapplication.model.Comment;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -31,14 +34,13 @@ public class UserDto {
 	@NotEmpty
 	@Size(min = 5, max = 8, message="Password Password size must greaterthan 4 or lessthan 9 !! ")
 	@Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,20}$", 
-	         message = "Password must include at least one uppercase letter, one lowercase letter, one digit, and one special character.")
+			message = "Password must include at least one uppercase letter, one lowercase letter, one digit, and one special character.")
+	//@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private String password;
 	
 	@NotBlank
 	private String about;
 	
-
-
 	public Integer getId() {
 		return id;
 	}

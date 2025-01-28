@@ -18,7 +18,7 @@ class BlogApplicationTests {
 	}
 	
 	@Test
-	public void userRepoProxyClass() {
+	 void userRepoProxyClass() {
 		String canonicalName = userRepo.getClass().getCanonicalName();
 		Package package1 = userRepo.getClass().getPackage();
 		System.out.println(canonicalName);
