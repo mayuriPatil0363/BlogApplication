@@ -2,6 +2,7 @@ package com.mayuri.blogapplication.service;
 
 import java.util.List;
 
+import com.mayuri.blogapplication.payload.PageableResponse;
 import com.mayuri.blogapplication.payload.PostDto;
 
 public interface PostService {
@@ -19,7 +20,7 @@ public interface PostService {
 	PostDto getPostById(Integer postId);
 	
 	//list of posts
-	List<PostDto> getListOfPosts();
+	PageableResponse getListOfPosts(Integer pageNumber, Integer pageSize, String sortBy , String sortDir);
 	
 	//find posts by category id
 	List<PostDto> getPostByCategory(Integer categoryId);

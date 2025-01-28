@@ -7,6 +7,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.mayuri.blogapplication.exception.ResourceNotFoundException;
@@ -26,14 +27,20 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private ModelMapper mapper;
 	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+	
 
 	//Create user
 	@Override
 	public UserDto createUser(UserDto userDto)
 	{
+		//encode password
+		userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
 		User user = mapper.map(userDto, User.class);
 		User savedUser = userRepo.save(user);
 		logger.info("user : {}", savedUser);
+		
 		UserDto map = mapper.map(savedUser, UserDto.class);
 		logger.info("userDto : {}", map);
 		return map;

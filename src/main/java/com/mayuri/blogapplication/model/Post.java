@@ -1,7 +1,10 @@
 package com.mayuri.blogapplication.model;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Post {
@@ -31,6 +35,8 @@ public class Post {
 	@Column(name="posted_date")
 	private Date date;
 	
+	private Boolean isActive;
+	
 	@ManyToOne
 	@JoinColumn(name="userId_fk")
 	private User user;
@@ -38,8 +44,20 @@ public class Post {
 	@ManyToOne
 	@JoinColumn(name="categoryId_fk")
 	private Category category;
+	
+	@OneToMany(mappedBy="post", cascade=CascadeType.ALL,fetch=FetchType.EAGER)
+	private Set<Comment> comment = new HashSet();
 
 	
+	
+	public Set<Comment> getComment() {
+		return comment;
+	}
+
+	public void setComment(Set<Comment> comment) {
+		this.comment = comment;
+	}
+
 	public Category getCategory() {
 		return category;
 	}
@@ -97,11 +115,20 @@ public class Post {
 		this.date = date;
 	}
 
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
+
 	@Override
 	public String toString() {
 		return "Post [postId=" + postId + ", title=" + title + ", content=" + content + ", imageName=" + imageName
-				+ ", date=" + date + ", user=" + user + ", category=" + category + "]";
+				+ ", date=" + date + ", isActive=" + isActive + ", user=" + user + ", category=" + category + "]";
 	}
+
 
 	
 

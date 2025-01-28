@@ -21,12 +21,12 @@ public class Category {
 	private Integer categoryId;
 	
 	@Column(name="category_title")
-	private String Title;
+	private String title;
 	
 	@Column(name="category_description")
 	private String description;
 	
-	@OneToMany(mappedBy="category", fetch=FetchType.LAZY , cascade=CascadeType.ALL)
+	@OneToMany(mappedBy="category", fetch=FetchType.LAZY , cascade=CascadeType.ALL, orphanRemoval = true)
 	private List<Post> post = new ArrayList<Post>();
 	
 	
@@ -47,12 +47,13 @@ public class Category {
 		this.categoryId = categoryId;
 	}
 
+
 	public String getTitle() {
-		return Title;
+		return title;
 	}
 
 	public void setTitle(String title) {
-		Title = title;
+		this.title = title;
 	}
 
 	public String getDescription() {
@@ -65,9 +66,11 @@ public class Category {
 
 	@Override
 	public String toString() {
-		return "Category [categoryId=" + categoryId + ", Title=" + Title + ", description=" + description + ", post="
+		return "Category [categoryId=" + categoryId + ", title=" + title + ", description=" + description + ", post="
 				+ post + "]";
 	}
+
+	
 
 	
 
